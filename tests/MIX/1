@@ -1,0 +1,9 @@
+A ^ B => D
+D + E => H
+G + F => A
+!H + A => E
+C | A + D | E => H
+
+=ABC
+
+?ABCDEFGH

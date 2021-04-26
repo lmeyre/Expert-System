@@ -1,0 +1,4 @@
+Notes pour le parser :
+
+-Doit on gerer multiples "Initial facts" lines, AKA multiples '=' lines
+-Doit on gerer multiples "Queries" lines, AKA multiples '?' lines
