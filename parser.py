@@ -12,32 +12,31 @@ class Parser:
             isolate = line.split('#')
             if not isolate[0]: # if empty line
                 continue
-            isolate[0] = isolate[0].lstrip()
+            isolate[0] = isolate[0].strip()
             if not isolate[0]:
                 continue
             if isolate[0][0] == '=':
-                add_fact(facts, isolate[0])
+                err = add_fact(facts, isolate[0])
             elif isolate[0][0] == '?':
-                add_query(queries, isolate[0])
-            # else:
-            #     add_rule(isolate[0], rules)
+                err = add_query(queries, isolate[0])
+            else:
+                err = add_rule(isolate[0], rules)
+            if err:
+                return err
         return rules, facts, queries, None
 
-# def add_rule(self, rule, rules):
-#     if not check_valid(rule):
-#         raise ValueError
-#     if "<=>" in rule:
-#         create_two(rule, rules)
-#         return
-#     splitted = rule.split("=>")
-#     if not splitted[0] or not splitted[1]:
-#         raise ValueError
-#     splitted_right = splitted[1].split("+")
-#     for value in splitted_right:
-#         value = value.strip()
-#         if not value[0].isupper():
-#             continue
-#     rules.append((splitted[0].strip(), splitted[1].strip()))
+def add_rule(self, rule, rules):
+    err = check_valid(rule)
+    if err:
+        return err
+    #if "<=>" in rule: to handkle
+        
+    splitted = rule.split("=>")
+    if not splitted[0] or not splitted[1]:
+        return "Missing one side of a rule" # could improve error later
+    splitted_right = splitted[1].split("+")
+
+    #we need to fill 3d array with values, complicated in py
 
     def add_fact(self, facts, line):
         i = 1#dodging '='
@@ -45,7 +44,7 @@ class Parser:
             if (fact not in valid_char):
                 return "Error, wrong symbol in facts"
             elif fact not in facts:
-                facts += fact
+                facts.append(fact)
             # if already in fact, no error, just not added
             i += 1
 
@@ -55,5 +54,5 @@ class Parser:
             if (query not in valid_char):
                 return "Error, wrong symbol in queries"
             elif query not in queries:
-                queries += query
+                queries.append(query)
             i += 1
