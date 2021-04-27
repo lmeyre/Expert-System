@@ -2,3 +2,35 @@ Notes pour le parser :
 
 -Doit on gerer multiples "Initial facts" lines, AKA multiples '=' lines
 -Doit on gerer multiples "Queries" lines, AKA multiples '?' lines
+
+-Il peut y avoir des operations dans la conclusion, exemple :   A => B + C
+-Ne pas oublier de gerer les parentheses
+
+Autres notes :
+
+-voir du coté de l'extention networkx pour les nodes
+
+
+|||     BINARY HACKER BONUS     |||
+
+BONUS 1 :
+
+The students must have chosen a relevant data structure to handle their rules and facts. 
+
+- A global graph of fact nodes linked by rule nodes is worth 5 
+- A separate graph for each rule is worth 3 
+- Anything else that is still more efficient than simple lists of facts and rules is worth 2 
+- Lists of facts and rules are worth 1 
+- Anything worse than that is worth 0 
+
+
+BONUS 2 :
+
+Any distinct and identifiable bonus that the students can show and prove working is worth 1. 
+
+Just in case, here are the bonuses that the subject suggests (Of course, it is still OK if they did something else, just make sure it is actually vaguely useful and not just a gimmick): 
+
+- Interactive fact validation in case of undetermined facts or just to fiddle with the input while running 
+- Visualization of the reasoning process, either with a GUI or a terminal interface, or even with text, whatever, as long as it is comprehensible 
+- "OR" and "XOR" in conclusions. This can lead to undetermined facts, and should also allow for negations in conclusions to be useful. 
+- Biconditional rules ("If-and-only-if"). 
