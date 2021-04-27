@@ -2,20 +2,29 @@
 
 import argparse as arg
 import sys
-import parser
-import resolve
+import Parser
+import Resolver
 
 def main():
-    parser = arg.ArgumentParser()
-    args = parser.parse_args()
+    arg_parse = arg.ArgumentParser()
+    arg_parse.add_argument('file', type=str, nargs='?')
+    args = arg_parse.parse_args()
 
-    p = parser.parse()
-    someArray, err = p.parse(args.file)
+    try:
+        with open(args.file, "r+") as f:
+            file_data = f.read().splitlines()
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+
+    parser = Parser.Parser()
+    rules, facts, queries, err = parser.parse(file_data)
     if err:
         print("Error : %s" % err)
         return False
-    resolver = resolve.resolve(someArray)
-    err = resolver.resolve()
+
+    resolver = Resolver.Resolver()
+    err = resolver.resolve(rules, facts)
     if err:
         print("Error : %s" % err)
         return False
