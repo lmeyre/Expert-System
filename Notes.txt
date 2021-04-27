@@ -11,6 +11,26 @@ Autres notes :
 -voir du coté de l'extention networkx pour les nodes
 
 
+L'exemple ci dessous semble suggerer, que dans le cas de `A | B + C` ,  `B + C` est gerer avant `A | B`, a confirmer.
+
+The program can handle parenthesised expressions correctly 
+
+Example input 1: 
+A | B + C => E 
+(F | G) + H => E 
+
+
+
+Est ce que si on a :
+A + B => C
+D + E => C
+
+=DE
+Est ce que C est vrai, ou est ce que C est contredit ? Est ce que si A + B => C est faux, cela signifie que C est faux, ou est ce que cela ne signifie juste pas que C est vrai.
+
+
+A + B | C + D => E    -> Dans quel ordre de logique on resout ? ((A+B) | C) + D ? a priori oui
+
 |||     BINARY HACKER BONUS     |||
 
 BONUS 1 :
