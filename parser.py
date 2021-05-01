@@ -29,14 +29,25 @@ def add_rule(self, rule, rules):
     err = check_valid(rule)
     if err:
         return err
-    #if "<=>" in rule: to handkle
+    #if "<=>" in rule: to handle
         
     splitted = rule.split("=>")
     if not splitted[0] or not splitted[1]:
         return "Missing one side of a rule" # could improve error later
+        
     splitted_right = splitted[1].split("+")
 
-    #we need to fill 3d array with values, complicated in py
+    new_rule = [] 
+    new_rule[0] = splitted[0].split() # we assume that A + B is separated by space and not A+B
+    new_rule[1] = splitted[1].split()
+    for part in new_rule[0]:
+        if len(part) != 1:
+            return ("Error in format of rule statement")
+    for part in new_rule[1]:
+        if len(part) != 1:
+            return ("Error in format of deduction")
+
+    rules.append(new_rule)
 
     def add_fact(self, facts, line):
         i = 1#dodging '='
