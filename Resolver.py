@@ -33,42 +33,45 @@ import rule
 
 class Resolver:
 
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
         self.rules = []#2d array of rules
         #self.rules = None  # 2d string array   1st - statement   2nd - deduction
                             # ou 3d ? 1d - ligne   2d - statement/deduction  3d/ separated statement letters/operators
         self.true_facts = {} # dictionnary letter / bool
         self.false_facts = {} # dictionnary letter / bool
+        #Les elements inconnus sont consideres comme faux jusqu'a preuve du contraire mais ne sont pas des false_facts (prouve faux)
         self.modificationDone = True# pas de do while en py
         self.operators = "+|^!"
 
     def resolve(self, rules, facts):
         self.rules = rules
-        self.true_facts = facts
+        for fact in facts:
+            self.true_facts[fact] = True
+        modificationDone = True
         while (modificationDone):
             modificationDone = False # Remember to set it back to true later when modification are indeed done!
             self.computes_all_rules()
 
     #Voir si on remove les lines qu'on a deja entierement analyze sans inconnues, genre A is true, et la ligne A => B.
     def computes_all_rules(self):
-        #on deduit si le rule statement est vrai
-        #si oui on met les valeur de rule deduction a vrai ?
-        #voir si on met les rule deduction a faux si c'est pas vrai
-        for rule in rules:
-            # rule_statement = line[0]
-            # rule_deduction = line[1]
+        for rule in self.rules:
             if self.analyze_statement(rule.statement) == True:
-                # pour l'instant on gere pas les trucs genre A => B | C, voir comment on le gere dans la logique avant le code
-                if current_condition == True:
-                    for line in rule_deduction:
-                        if line not in operators and line not in self.true_facts:
-                            self.true_facts[line] = True
+                for part in rule.deduction:
+                    if part not in self.operators and part not in "()":
+                        #to update to handle more
+                        # pour l'instant on gere pas les trucs genre A => B | C, voir comment on le gere dans la logique avant le code
+                        if part not in self.true_facts:
+                            modificationDone = True
+                            self.true_facts[part] = True
+                        #Ici en ajoutant les trucs a true / false facts, on verifie si certains sont inconnus,
+                        #si aucun le sont, on peut virer cette ligne de la loop de rules
             #else set deduction to false, or ignore ? -> ignore
 
     def analyze_statement(self, statement):
-
         #new rework
-        print("statement debug test, statement is :" + statement)
+        if (self.args.debug_resolve):
+            print("statement debug test, statement is :" + ''.join(statement))
         i = 0
         #Get initial condition
         if (statement[i] == '('):
@@ -79,10 +82,11 @@ class Resolver:
                 i += 1
             current_condition = self.analyze_statement(initial)
         else:
-            current_condition = statement[i] in true_facts    
+            current_condition = statement[i] in self.true_facts    
             i += 1
 
-        print(i + " is index and condition = " + current_condition)
+        if (self.args.debug_resolve):
+            print(i , " is index and INITIAL condition = " , current_condition)
         #Loop and compute the condition with other elements
         
         last_operator = ''
@@ -99,7 +103,7 @@ class Resolver:
             else:
                 if statement[i] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
                     print("Problem here, unhandled case ? -> " + statement[i])
-                new_condition = statement[i] in true_facts
+                new_condition = statement[i] in self.true_facts
                 current_condition = self.combine_statements(last_operator, current_condition, new_condition)
             i += 1
 
@@ -113,6 +117,8 @@ class Resolver:
         #     current_condition = self.combine_statements(operand, current_condition, part2)
         #     i += 2
         
+        if self.args.debug_resolve:
+            print("final condition = " , current_condition)
         return current_condition
 
     def combine_statements(self, operand, part1, part2):

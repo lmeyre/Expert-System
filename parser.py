@@ -2,15 +2,17 @@ import re
 import rule as rule_obj
 class Parser:
 
-    def __init__(self):
+    def __init__(self, args):
         self.valid_char = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        self.args = args
 
     def parse(self, file_data):
         facts = []
         rules = []  
         queries = []
         for line in file_data:
-            print(line) # check if empty line appear and we have to handle or not
+            if self.args.show :
+                print(line) # check if empty line appear and we have to handle or not
             isolate = line.split('#')
             if not isolate[0]: # if empty line
                 continue
