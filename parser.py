@@ -56,12 +56,18 @@ class Parser:
             splitted = rule.split("=>")
             if not splitted[0] or not splitted[1]:
                 return "Missing one side of a rule" # could improve error later
-                
-            #splitted_right = splitted[1].split("+")#??
 
             new_rule = rule_obj.rule()
-            new_rule.statement = splitted[0].split() # we assume that A + B is separated by space and not A+B
-            new_rule.deduction = splitted[1].split()
+            for c in splitted[0]:
+                if c  == ' ':
+                    continue
+                else:
+                    new_rule.statement.append(c)
+            for c in splitted[1]:
+                if c  == ' ':
+                    continue
+                else:
+                    new_rule.deduction.append(c)
 
             rules.append(new_rule)
 

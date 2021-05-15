@@ -27,7 +27,15 @@ def main():
     print(facts)
     print(queries)
     for rule in rules:
+        print("Whole rule : ")
         print(''.join(rule.statement) + " => " + ''.join(rule.deduction))
+        print("     " + "detail, rule statement :")
+        for c in rule.statement:
+            print("     " + c)
+        print("     " + "rule deduction :")
+        for c in rule.deduction:
+            print("     " + c)
+
 
     # resolver = Resolver.Resolver()
     # err = resolver.resolve(rules, facts)
