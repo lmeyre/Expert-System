@@ -98,8 +98,12 @@ class Parser:
             if c == " ":
                 continue
             elif c == "(":
+                if letter_next is False:
+                    return ("Problem in parenthesis order")
                 open_parenthesis += 1
             elif c == ")":
+                if letter_next is True:
+                    return ("Problem in parenthesis order")
                 open_parenthesis -= 1    
                 if open_parenthesis < 0:
                     return ("Problem in parenthesis order")

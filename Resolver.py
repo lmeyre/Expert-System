@@ -30,9 +30,6 @@ import rule
 # A + B    -> RULE STATEMENT
 # => C     -> RULE DEDUCTION
 
-#Pour les parentheses, comme on va loop ici, ca serait bien de re order le statement sans parenthese une seule fois avant, exemple :
-#A + (B | C)  ->    B | C + A
-# et que le parser nous passe ces lignes    
 
 class Resolver:
 
@@ -50,36 +47,71 @@ class Resolver:
         self.true_facts = facts
         while (modificationDone):
             modificationDone = False # Remember to set it back to true later when modification are indeed done!
-            computes_all_rules()
+            self.computes_all_rules()
 
     #Voir si on remove les lines qu'on a deja entierement analyze sans inconnues, genre A is true, et la ligne A => B.
     def computes_all_rules(self):
         #on deduit si le rule statement est vrai
         #si oui on met les valeur de rule deduction a vrai ?
         #voir si on met les rule deduction a faux si c'est pas vrai
-        for line in rules:
-            rule_statement = line[0]
-            rule_deduction = line[1]
-            if analyze_statement(rule_statement) == True:
+        for rule in rules:
+            # rule_statement = line[0]
+            # rule_deduction = line[1]
+            if self.analyze_statement(rule.statement) == True:
                 # pour l'instant on gere pas les trucs genre A => B | C, voir comment on le gere dans la logique avant le code
                 if current_condition == True:
                     for line in rule_deduction:
                         if line not in operators and line not in self.true_facts:
                             self.true_facts[line] = True
-            #else set deduction to false, or ignore ?
+            #else set deduction to false, or ignore ? -> ignore
 
-    def analyze_statement(self, rule_statement):
-    #On va pas decordiquer le statement ici vu qu'on risque de loop, pour opti faut le faire qu'une fois et donc dans le parser
-    #idealement faudrait deja que ca soit "prepare", donc en tableau 2d avec les letttres, et les operand
-    #on assume egalement que les parenthese ont ete retirees et qu'on a le bon ordre
-        current_condition = rule_statement[0] in true_facts
+    def analyze_statement(self, statement):
+
+        #new rework
+        print("statement debug test, statement is :" + statement)
+        i = 0
+        #Get initial condition
+        if (statement[i] == '('):
+            i = 1
+            initial = []
+            while (statement[i] != ')'):
+                initial.append(statement[x])
+                i += 1
+            current_condition = self.analyze_statement(initial)
+        else:
+            current_condition = statement[i] in true_facts    
+            i += 1
+
+        print(i + " is index and condition = " + current_condition)
+        #Loop and compute the condition with other elements
         
-        i = 2
-        while (i < len(rule_statement)):
-            operand = rule_statement[i - 1]
-            part2 = rule_statement[i] in true_facts
-            current_condition = combine_statements(operand, current_condition, part2)
-            i += 2
+        last_operator = ''
+        while (i < len(statement)):
+            if statement[i] == '(':
+                small_statement = []
+                i += 1
+                while statement[i] != ')':
+                    small_statement.append(statement[i])
+                new_condition =  self.analyze_statement(small_statement)
+                current_condition = self.combine_statements(last_operator, current_condition, new_condition)
+            elif statement[i] in self.operators:
+                last_operator = statement[i]
+            else:
+                if statement[i] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+                    print("Problem here, unhandled case ? -> " + statement[i])
+                new_condition = statement[i] in true_facts
+                current_condition = self.combine_statements(last_operator, current_condition, new_condition)
+            i += 1
+
+        #Old :
+        # current_condition = rule_statement[0] in true_facts
+        
+        # i = 2
+        # while (i < len(rule_statement)):
+        #     operand = rule_statement[i - 1]
+        #     part2 = rule_statement[i] in true_facts
+        #     current_condition = self.combine_statements(operand, current_condition, part2)
+        #     i += 2
         
         return current_condition
 

@@ -36,12 +36,12 @@ def main():
         for c in rule.deduction:
             print("     " + c)
 
-
-    # resolver = Resolver.Resolver()
-    # err = resolver.resolve(rules, facts)
-    # if err:
-    #     print("Error : %s" % err)
-    #     return False
+    print("////////// ENTERING RESOLVER ////////////")
+    # # resolver = Resolver.Resolver()
+    # # err = resolver.resolve(rules, facts)
+    # # if err:
+    # #     print("Error : %s" % err)
+    # #     return False
     return True
 
 if __name__ == '__main__':
