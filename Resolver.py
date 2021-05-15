@@ -1,3 +1,4 @@
+import rule
 #Il faudra loop dans les deduction a chaque fois qu'un progres a lieux, en effet, si on :
 #B => A
 #C => B
@@ -23,7 +24,6 @@
 #ternary:
 #state = "nice" if is_nice else "not nice"
 
-
 #legend :
 # =ABC -> FACTS
 # A + B => C     -> RULE
@@ -37,10 +37,11 @@
 class Resolver:
 
     def __init__(self):
-        self.rules = None  # 2d string array   1st - statement   2nd - deduction
+        self.rules = []#2d array of rules
+        #self.rules = None  # 2d string array   1st - statement   2nd - deduction
                             # ou 3d ? 1d - ligne   2d - statement/deduction  3d/ separated statement letters/operators
-        self.true_facts = None # dictionnary letter / bool
-        self.false_facts = None # dictionnary letter / bool
+        self.true_facts = {} # dictionnary letter / bool
+        self.false_facts = {} # dictionnary letter / bool
         self.modificationDone = True# pas de do while en py
         self.operators = "+|^!"
 
@@ -59,7 +60,7 @@ class Resolver:
         for line in rules:
             rule_statement = line[0]
             rule_deduction = line[1]
-            if analyze_statement(rule_statement) == true:
+            if analyze_statement(rule_statement) == True:
                 # pour l'instant on gere pas les trucs genre A => B | C, voir comment on le gere dans la logique avant le code
                 if current_condition == True:
                     for line in rule_deduction:
@@ -82,17 +83,11 @@ class Resolver:
         
         return current_condition
 
-
     def combine_statements(self, operand, part1, part2):
         if operand == '+':
-            if part1 == True and part2 == True:
-                return True
-            else:
-                return False
+            return (part1 and part2)
         elif operand == '|':
-            if part1 == True or part2 == True:
-                return True
-            else:
-                return False
-        print("Unhandled operator to add!!")
+            return (part1 or part2)
+        elif operand == '^':
+            return (part1 and not part2) or (not part1 and part2)
 

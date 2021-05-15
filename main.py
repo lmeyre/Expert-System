@@ -23,11 +23,17 @@ def main():
         print("Error : %s" % err)
         return False
 
-    resolver = Resolver.Resolver()
-    err = resolver.resolve(rules, facts)
-    if err:
-        print("Error : %s" % err)
-        return False
+    print("Listing facts, queries, then all rules")
+    print(facts)
+    print(queries)
+    for rule in rules:
+        print(''.join(rule.statement) + " => " + ''.join(rule.deduction))
+
+    # resolver = Resolver.Resolver()
+    # err = resolver.resolve(rules, facts)
+    # if err:
+    #     print("Error : %s" % err)
+    #     return False
     return True
 
 if __name__ == '__main__':
