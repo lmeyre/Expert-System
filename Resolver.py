@@ -42,7 +42,7 @@ class Resolver:
         self.false_facts = {} # dictionnary letter / bool
         #Les elements inconnus sont consideres comme faux jusqu'a preuve du contraire mais ne sont pas des false_facts (prouve faux)
         self.modificationDone = True# pas de do while en py
-        self.operators = "+|^!"
+        self.operators = "+|^"
 
     def resolve(self, rules, facts):
         self.rules = rules
@@ -57,6 +57,11 @@ class Resolver:
     def computes_all_rules(self):
         for rule in self.rules:
             if self.analyze_statement(rule.statement) == True:
+
+                #A voir :
+                #si ya un '|'  -> les 2 cotes sont indetermines
+                #si ya un '+' -> les 2 cote sont vrai (et faux pour les !)
+                #si ya un '^' -> on check si on connait un des deux, si oui l'autre est l'inverse, si aucun des deux est connu, ils sont inconnus, si les 2 sont connus on verifie que no contradiction
                 for part in rule.deduction:
                     if part not in self.operators and part not in "()":
                         #to update to handle more
@@ -69,11 +74,40 @@ class Resolver:
             #else set deduction to false, or ignore ? -> ignore
 
     def analyze_statement(self, statement):
-        #new rework
         if (self.args.debug_resolve):
             print("statement debug test, statement is :" + ''.join(statement))
+        current_condition, i = self.find_initial_condition(statement)
+        #Loop and compute the initial condition with other elements, step by step
+        last_operator = ''
+        negative = False
+        while (i < len(statement)):
+            if statement[i] == '(':
+                small_statement = []
+                i += 1
+                while statement[i] != ')':
+                    small_statement.append(statement[i])
+                new_condition =  self.analyze_statement(small_statement)
+                current_condition = self.combine_statements(last_operator, current_condition, new_condition)
+            elif statement[i] in self.operators:
+                last_operator = statement[i]
+            elif statement[i] == '!':
+                negative = True
+            else:
+                if statement[i] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":# TMP TO REMOVE ON FINISH
+                    print("Problem here, unhandled case ? -> " + statement[i])
+                new_condition = statement[i] in self.true_facts
+                if negative:
+                    negative = False
+                    new_condition = not new_condition
+                current_condition = self.combine_statements(last_operator, current_condition, new_condition)
+            i += 1
+        
+        if self.args.debug_resolve:
+            print("final condition = " , current_condition)
+        return current_condition
+    
+    def find_initial_condition(self, statement):
         i = 0
-        #Get initial condition
         if (statement[i] == '('):
             i = 1
             initial = []
@@ -87,39 +121,7 @@ class Resolver:
 
         if (self.args.debug_resolve):
             print(i , " is index and INITIAL condition = " , current_condition)
-        #Loop and compute the condition with other elements
-        
-        last_operator = ''
-        while (i < len(statement)):
-            if statement[i] == '(':
-                small_statement = []
-                i += 1
-                while statement[i] != ')':
-                    small_statement.append(statement[i])
-                new_condition =  self.analyze_statement(small_statement)
-                current_condition = self.combine_statements(last_operator, current_condition, new_condition)
-            elif statement[i] in self.operators:
-                last_operator = statement[i]
-            else:
-                if statement[i] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-                    print("Problem here, unhandled case ? -> " + statement[i])
-                new_condition = statement[i] in self.true_facts
-                current_condition = self.combine_statements(last_operator, current_condition, new_condition)
-            i += 1
-
-        #Old :
-        # current_condition = rule_statement[0] in true_facts
-        
-        # i = 2
-        # while (i < len(rule_statement)):
-        #     operand = rule_statement[i - 1]
-        #     part2 = rule_statement[i] in true_facts
-        #     current_condition = self.combine_statements(operand, current_condition, part2)
-        #     i += 2
-        
-        if self.args.debug_resolve:
-            print("final condition = " , current_condition)
-        return current_condition
+        return current_condition, i
 
     def combine_statements(self, operand, part1, part2):
         if operand == '+':

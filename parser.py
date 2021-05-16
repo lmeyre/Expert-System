@@ -114,7 +114,7 @@ class Parser:
                     return ("'!' Symbol is in invalid position")
             elif letter_next is True and c not in self.valid_char:
                 return "Missing letter"
-            elif letter_next is False and c not in "+|^!":
+            elif letter_next is False and c not in "+|^":
                 return "Missing operator"
             else:
                 letter_next = not letter_next   
