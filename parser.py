@@ -35,7 +35,7 @@ class Parser:
         while (i < len(line)):
             if (line[i] not in self.valid_char):
                 return "Error, wrong symbol in facts"
-            self.facts[line[i]] = Fact.Fact(Fact.FactState.TRUE) # event if its already added, set it to true\
+            self.facts[line[i]] = Fact.Fact(Fact.FactState.TRUE) # event if its already added, set it to true
             i += 1
 
     def add_query(self, queries, line):

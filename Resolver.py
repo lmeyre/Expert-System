@@ -1,5 +1,6 @@
 from Fact import FactState
 import Rule
+import sys
 #Il faudra loop dans les deduction a chaque fois qu'un progres a lieux, en effet, si on :
 #B => A
 #C => B
@@ -52,10 +53,10 @@ class Resolver:
         err = None
         # for fact in facts:
         #     self.true_facts[fact] = True
-        modificationDone = True
-        while (modificationDone):
-            #print("one loop, modif = ", modificationDone)
-            modificationDone = False # Remember to set it back to true later when modification are indeed done!
+        self.modificationDone = True
+        while (self.modificationDone):
+            #print("/////////// ONE LOOP")
+            self.modificationDone = False # Remember to set it back to true later when modification are indeed done!
             err = self.computes_all_rules()
             
         return err, self.facts
@@ -128,6 +129,7 @@ class Resolver:
         return current_condition, i
 
     def analyze_deduction(self, deduction):
+        print("Analyzing deduction : " , deduction)
         #A voir :
         #si ya un '|'  -> les 2 cotes sont indetermines
         #si ya un '+' -> les 2 cote sont vrai (et faux pour les !)
@@ -143,7 +145,7 @@ class Resolver:
         left_op = ""
         #right_op = ""#pas sur d'en avoir besoin -> on veut pas vraiment analyzer une lettre en checkant les 2 op des 2 cote car c'est relou si ya des !
         left_letter = ""
-        left_letter_state = self.facts[deduction[idx]].FactState # temporary state in relation to 2 letters (1 and 2), before examining the 2nd one with the 3rd need to remember 2nd state relation to 1 for XOR
+        left_letter_state = FactState.DEFAULT# = self.facts[deduction[idx]].FactState # temporary state in relation to 2 letters (1 and 2), before examining the 2nd one with the 3rd need to remember 2nd state relation to 1 for XOR
         #penser si ya que 1 lettre
         while (idx < lenD):
             if (deduction[idx] in self.operators):
@@ -151,11 +153,15 @@ class Resolver:
             elif (deduction[idx] == '!'):
                 negating = True
             else:
-                curr = deduction[idx]               
-                curr_state = FactState.TRUE
+                if deduction[idx] not in  "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+                    print("problem in resolver, tmp to remove") # to remove
+                curr = deduction[idx]       
+                #temporary state for current, before sometime changing it again below    
                 if negating:
                     curr_state = FactState.FALSE
                     negating = False
+                else:    
+                    curr_state = FactState.TRUE
                 if idx > 1: # pour la toute premiere lettre, on va juste la premiere estimation, et pas ce qui suit
                     # cas pas a gerer pour la premiere lettre, vu que ya rien a s gauche
                     if left_op == '+':
@@ -164,23 +170,31 @@ class Resolver:
                         self.apply_state(left_letter, FactState.UNDETERMINED)
                         curr_state = FactState.UNDETERMINED 
                     elif left_op == '^':
-                        if (self.facts[left_letter].FactState == FactState.UNDETERMINED and self.facts[curr].factState == FactState.UNDETERMINED):    
+                        #si un est vrai et l'autre faux, osef
+                        if ((self.facts[left_letter].FactState == FactState.TRUE and self.facts[curr].FactState == FactState.FALSE) or (self.facts[left_letter].FactState == FactState.FALSE and self.facts[curr].FactState == FactState.TRUE)):
+                            print("good xor gate already in place on : " + curr)
+                            curr_state = self.facts[curr].FactState
+                        #si les 2 sont default/undetermined
+                        elif (self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED) and (self.facts[curr].FactState == FactState.DEFAULT or self.facts[curr].factState == FactState.UNDETERMINED):    
                             self.apply_state(left_letter, FactState.UNDETERMINED)
                             curr_state = FactState.UNDETERMINED 
-                        elif (self.facts[left_letter].FactState == self.facts[curr].FactState):    
+                        #si les 2 sont egaux, et true ou false, contradiction
+                        elif (self.facts[left_letter].FactState == self.facts[curr].FactState) and (self.facts[left_letter].FactState == FactState.TRUE or self.facts[left_letter].FactState == FactState.FALSE):    #equal if undetermined or default isnt contradiction
                             return "Contradiction in deduction at XOR gate"
-                        elif self.facts[left_letter].FactState == FactState.UNDETERMINED: #si 1 est undetermined
+                        elif self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED: #si 1 est undetermined/default
                             state = FactState.TRUE if (self.facts[curr].FactState == FactState.FALSE) else FactState.FALSE
                             self.apply_state(left_letter, state)
                             curr_state = self.facts[curr].FactState
-                        elif self.facts[curr].FactState == FactState.UNDETERMINED: #si 2 est undetermined
+                        elif self.facts[curr].FactState == FactState.DEFAULT or self.facts[curr].FactState == FactState.UNDETERMINED: #si 2 est undetermined/default
                             state = FactState.TRUE if (self.facts[left_letter].FactState == FactState.FALSE) else FactState.FALSE
                             self.apply_state(left_letter, left_letter_state)
                             curr_state = state
                         else:
-                            print("wtf2")
+                            print("wtf2XXXXXXXXXXXXXXXXXXXXXXXX  ", deduction[idx], " and left op - ", left_op)
+                            print(self.facts[left_letter].FactState)
+                            print(self.facts[curr].FactState)
                     else:
-                        print("wtf")
+                        print("wtfXXXXXXXXXXXXXXXXXXXXXXX")
                 left_letter = curr
                 left_letter_state = curr_state
                 #ne pas set negating, que apres l'avoir use on le remet a true
@@ -188,14 +202,20 @@ class Resolver:
         
         # derniere lettre
         #rien a comparer a sa droite
+        #print("ending, state of letter ", left_letter, "is " , left_letter_state)
         self.apply_state(left_letter, left_letter_state)
 
     def apply_state(self, letter, state):
-        print("entering ", letter, " and state ", state)
+        print("entering : ", letter, " and state ", state)
         if (self.facts[letter].FactState != state):
+            if (state == FactState.UNDETERMINED and self.facts[letter].FactState == FactState.TRUE) or (state == FactState.UNDETERMINED and self.facts[letter].FactState == FactState.FALSE):
+                return  # On applique pas undetermined sur un truc prouve vrai ou faux.
+            elif (self.facts[letter].FactState == FactState.TRUE and state == FactState.FALSE) or (self.facts[letter].FactState == FactState.FALSE and state == FactState.TRUE):
+                print("Contradiction in rules -> " + letter + " has been proven True AND False")
+                sys.exit(1)
             self.facts[letter].FactState = state
             self.modificationDone = True
-            print("APPLYING STATE => ", state)
+            print("APPLYING STATE => ", state, " to ", letter)
 
     def combine_statements(self, operand, part1, part2):
         if operand == '+':
