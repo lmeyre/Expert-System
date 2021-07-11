@@ -57,14 +57,23 @@ class Resolver:
         while (self.modificationDone):
             #print("/////////// ONE LOOP")
             self.modificationDone = False # Remember to set it back to true later when modification are indeed done!
-            err = self.computes_all_rules()
+            err = self.computes_all_rules(False)
+        #on gere les faux par default
+        self.modificationDone = True
+        while (self.modificationDone):
+            #print("/////////// ONE LOOP")
+            self.modificationDone = False # Remember to set it back to true later when modification are indeed done!
+            err = self.computes_all_rules(True)
+        
             
         return err, self.facts
 
     #Voir si on remove les lines qu'on a deja entierement analyze sans inconnues, genre A is true, et la ligne A => B.
-    def computes_all_rules(self):
+    def computes_all_rules(self, handling_default):
         for rule in self.rules:
             #print("one rule = " , rule)
+            if handling_default == False and self.check_default_in_rule(rule) == True:
+                continue
             if self.analyze_statement(rule.statement) == True:
                 err =self.analyze_deduction(rule.deduction)
                 if err:
@@ -73,7 +82,7 @@ class Resolver:
     def analyze_statement(self, statement):
         if (self.args.debug_resolve):
             print("statement debug test, statement is :" + ''.join(statement))
-        current_condition, i = self.find_initial_condition(statement)
+        current_condition, i= self.find_initial_condition(statement)
         #Loop and compute the initial condition with other elements, step by step
         left_op = ''
         negative = False
@@ -175,7 +184,7 @@ class Resolver:
                             print("good xor gate already in place on : " + curr)
                             curr_state = self.facts[curr].FactState
                         #si les 2 sont default/undetermined
-                        elif (self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED) and (self.facts[curr].FactState == FactState.DEFAULT or self.facts[curr].factState == FactState.UNDETERMINED):    
+                        elif (self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED) and (self.facts[curr].FactState == FactState.DEFAULT or self.facts[curr].FactState == FactState.UNDETERMINED):    
                             self.apply_state(left_letter, FactState.UNDETERMINED)
                             curr_state = FactState.UNDETERMINED 
                         #si les 2 sont egaux, et true ou false, contradiction
@@ -204,6 +213,12 @@ class Resolver:
         #rien a comparer a sa droite
         #print("ending, state of letter ", left_letter, "is " , left_letter_state)
         self.apply_state(left_letter, left_letter_state)
+
+    def check_default_in_rule(self, rule):
+        for letter in rule.statement:
+            if letter in self.facts.keys() and self.facts[letter].FactState == FactState.DEFAULT:
+                return True
+        return False
 
     def apply_state(self, letter, state):
         print("entering : ", letter, " and state ", state)
