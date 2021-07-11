@@ -54,7 +54,7 @@ class Resolver:
         #     self.true_facts[fact] = True
         modificationDone = True
         while (modificationDone):
-            print("one loop, modif = ", modificationDone)
+            #print("one loop, modif = ", modificationDone)
             modificationDone = False # Remember to set it back to true later when modification are indeed done!
             err = self.computes_all_rules()
             
@@ -63,7 +63,7 @@ class Resolver:
     #Voir si on remove les lines qu'on a deja entierement analyze sans inconnues, genre A is true, et la ligne A => B.
     def computes_all_rules(self):
         for rule in self.rules:
-            print("one rule = " , rule)
+            #print("one rule = " , rule)
             if self.analyze_statement(rule.statement) == True:
                 err =self.analyze_deduction(rule.deduction)
                 if err:
@@ -141,7 +141,7 @@ class Resolver:
         #en fait on doit toujours faire la lettre current + celle de gauche, car ca permet de recup les ! et de pas avoir a check les position apres, si elles sont pas out of bound etc
         #en resume on traite chaque lettre en 2 etape, d'abord son premier etat vis a vis du signe a sa gauche, puis en arrivant a la lettre d'apres on confirme son etat vis a vis du signe a sa droite
         left_op = ""
-        right_op = ""#pas sur d'en avoir besoin -> on veut pas vraiment analyzer une lettre en checkant les 2 op des 2 cote car c'est relou si ya des !
+        #right_op = ""#pas sur d'en avoir besoin -> on veut pas vraiment analyzer une lettre en checkant les 2 op des 2 cote car c'est relou si ya des !
         left_letter = ""
         left_letter_state = self.facts[deduction[idx]].FactState # temporary state in relation to 2 letters (1 and 2), before examining the 2nd one with the 3rd need to remember 2nd state relation to 1 for XOR
         #penser si ya que 1 lettre
@@ -184,7 +184,7 @@ class Resolver:
                 left_letter = curr
                 left_letter_state = curr_state
                 #ne pas set negating, que apres l'avoir use on le remet a true
-                idx += 1
+            idx += 1
         
         # derniere lettre
         #rien a comparer a sa droite
