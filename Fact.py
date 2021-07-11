@@ -8,6 +8,7 @@ class FactState(Enum):
     UNDETERMINED = 4
 
 class Fact:
+    FactState = FactState.DEFAULT
     def __init__(self, FactStateCondition):
         self.FactState = FactStateCondition
     def print_state(self, letter):

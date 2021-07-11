@@ -54,6 +54,7 @@ class Resolver:
         #     self.true_facts[fact] = True
         modificationDone = True
         while (modificationDone):
+            print("one loop, modif = ", modificationDone)
             modificationDone = False # Remember to set it back to true later when modification are indeed done!
             err = self.computes_all_rules()
             
@@ -62,6 +63,7 @@ class Resolver:
     #Voir si on remove les lines qu'on a deja entierement analyze sans inconnues, genre A is true, et la ligne A => B.
     def computes_all_rules(self):
         for rule in self.rules:
+            print("one rule = " , rule)
             if self.analyze_statement(rule.statement) == True:
                 err =self.analyze_deduction(rule.deduction)
                 if err:
@@ -190,8 +192,8 @@ class Resolver:
 
     def apply_state(self, letter, state):
         print("entering ", letter, " and state ", state)
-        if (self.facts[letter] != state):
-            self.facts[letter] = state
+        if (self.facts[letter].FactState != state):
+            self.facts[letter].FactState = state
             self.modificationDone = True
             print("APPLYING STATE => ", state)
 
