@@ -14,6 +14,7 @@ def main():
     arg_parse.add_argument("-P", "--debug_parse", action="store_true", default=False, help= "Debug parser")
     arg_parse.add_argument("-R", "--debug_resolve", action="store_true", default=False, help= "Debug resolving")
     arg_parse.add_argument("-D", "--details", action="store_true", default=False, help= "All letters are queries")
+    arg_parse.add_argument("-G", "--graph", action="store_true", default=False, help= "Display Graph")
     args = arg_parse.parse_args()
 
     try:
@@ -45,11 +46,14 @@ def main():
             #     print("     " + c)
         print("\n////////// ENTERING RESOLVER ////////////\n")
     resolver = Resolver.Resolver(args)
-    err, facts = resolver.resolve(rules, facts)
+    err, facts, graph = resolver.resolve(rules, facts)
     if err:
         print("Error : %s" % err)
         return False
     Display.display_facts(args, queries, facts)
+
+    if args.graph:
+        Display.display_graph(graph, facts)
     return True
 
 

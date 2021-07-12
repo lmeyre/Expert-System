@@ -1,7 +1,0 @@
-D => E
-A => B ^ C
-A => D 
-
-=AB
-
-?ABCDE

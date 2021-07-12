@@ -6,6 +6,8 @@ class FactState(Enum):
     FALSE = 2
     TRUE = 3
     UNDETERMINED = 4
+    OUT = 5
+    LINKER = 6
 
 class Fact:
     FactState = FactState.DEFAULT
