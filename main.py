@@ -45,7 +45,7 @@ def main():
     Display.display_facts(args, queries, facts)
 
     if args.graph:
-        Display.display_graph(graph, facts)
+        Display.display_graph(graph)
     return True
 
 if __name__ == '__main__':

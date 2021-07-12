@@ -27,7 +27,7 @@ class Parser:
             else:
                 err = self.add_rule(isolate[0], rules)
             if err:
-                return err
+                return None, None, None, err
         return rules, queries, self.facts, None
 
     def add_fact(self, line):
@@ -98,7 +98,6 @@ class Parser:
     def check_valid_part(self, rule_part):
         open_parenthesis = 0
         letter_next = True
-        negating = False
         for idx, c in enumerate(rule_part):
             if c == " ":
                 continue
@@ -115,8 +114,6 @@ class Parser:
             elif c == "!":
                 if letter_next is False or idx == len(rule_part) or rule_part[idx + 1] not in self.valid_char:
                     return ("'!' Symbol is in invalid position")
-                else:
-                    negating = True
             elif letter_next is True and c not in self.valid_char:
                 return "Missing letter"
             elif letter_next is False and c not in "+|^":

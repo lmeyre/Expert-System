@@ -95,39 +95,35 @@ class Resolver:
         left_op = ""
         left_letter = ""
         left_letter_state = FactState.DEFAULT
-        #penser si ya que 1 lettre
         while (idx < lenD):
             if (deduction[idx] in self.operators):
                 left_op = deduction[idx]
             elif (deduction[idx] == '!'):
                 negating = True
             else:
-                if deduction[idx] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-                    print("problem in resolver, tmp to remove") # to remove
-                curr = deduction[idx]       
-                #temporary state for current, before sometime changing it again below    
+                curr = deduction[idx]
+                #Giving Curr a temporary state before processing it more down below
                 if negating:
                     curr_state = FactState.FALSE
                     negating = False
                 else:    
                     curr_state = FactState.TRUE
-                if idx > 1: # pour la toute premiere lettre, on va juste la premiere estimation, et pas ce qui suit
-                    # cas pas a gerer pour la premiere lettre, vu que ya rien a s gauche
+                if idx > 1:
                     if left_op == '+':
                         self.apply_state(left_letter, left_letter_state)
                     elif left_op == '|':
                         self.apply_state(left_letter, FactState.UNDETERMINED)
                         curr_state = FactState.UNDETERMINED 
                     elif left_op == '^':
-                        #si un est vrai et l'autre faux, osef
+                        #If the XOR gate is already valid
                         if ((self.facts[left_letter].FactState == FactState.TRUE and self.facts[curr].FactState == FactState.FALSE) or (self.facts[left_letter].FactState == FactState.FALSE and self.facts[curr].FactState == FactState.TRUE)):
                             print("good xor gate already in place on : " + curr)
                             curr_state = self.facts[curr].FactState
-                        #si les 2 sont default/undetermined
+                        #If both are default/undetermined
                         elif (self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED) and (self.facts[curr].FactState == FactState.DEFAULT or self.facts[curr].FactState == FactState.UNDETERMINED):    
                             self.apply_state(left_letter, FactState.UNDETERMINED)
                             curr_state = FactState.UNDETERMINED 
-                        #si les 2 sont egaux, et true ou false, contradiction
+                        #If both are equal to True, or to False -> Contradiction
                         elif (self.facts[left_letter].FactState == self.facts[curr].FactState) and (self.facts[left_letter].FactState == FactState.TRUE or self.facts[left_letter].FactState == FactState.FALSE):    #equal if undetermined or default isnt contradiction
                             return "Contradiction in deduction at XOR gate"
                         elif self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED: #si 1 est undetermined/default
@@ -139,19 +135,14 @@ class Resolver:
                             self.apply_state(left_letter, left_letter_state)
                             curr_state = state
                         else:
-                            print("wtf2XXXXXXXXXXXXXXXXXXXXXXXX  ", deduction[idx], " and left op - ", left_op)
+                            print(" CRITICAAAAAAAAAAAAAAAAAAAL ", deduction[idx], " and left op - ", left_op)
                             print(self.facts[left_letter].FactState)
                             print(self.facts[curr].FactState)
                     else:
-                        print("wtfXXXXXXXXXXXXXXXXXXXXXXX")
+                        print("CRITICAAAAAAAAAAAAAAAAAAAL")
                 left_letter = curr
                 left_letter_state = curr_state
-                #ne pas set negating, que apres l'avoir use on le remet a true
             idx += 1
-        
-        # derniere lettre
-        #rien a comparer a sa droite
-        #print("ending, state of letter ", left_letter, "is " , left_letter_state)
         self.apply_state(left_letter, left_letter_state)
 
     def check_default_in_rule(self, rule):
