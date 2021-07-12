@@ -1,4 +1,3 @@
-#Details -> Show not only Queries, but all. Also show those proven false, and those false by default
 from Fact import FactState
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -10,9 +9,8 @@ def display_facts(args, queries, facts):
         for key in facts:
             facts[key].print_state(key)
     else:
-        for key in facts:
-            if (facts[key].FactState == FactState.TRUE):
-                facts[key].print_state(key)
+        for key in queries:
+            facts[key].print_state(key)
 
 def display_graph(graph, facts):
         colors = []
@@ -23,7 +21,7 @@ def display_graph(graph, facts):
                 elif graph.nodes[x]["FactState"] == FactState.FALSE:
                     colors.append("red")
                 elif graph.nodes[x]["FactState"] == FactState.DEFAULT:
-                    colors.append('#FF0000')
+                    colors.append('#900000')
                 elif graph.nodes[x]["FactState"] == FactState.UNDETERMINED:
                     colors.append("grey")
                 elif graph.nodes[x]["FactState"] == FactState.OUT:

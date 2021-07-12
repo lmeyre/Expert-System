@@ -9,10 +9,8 @@ import Display
 def main():
     arg_parse = arg.ArgumentParser()
     arg_parse.add_argument("file")
-    #arg_parse.add_argument('file', type=str, nargs='?')
     arg_parse.add_argument("-S", "--show", action="store_true", default=False, help= "Show input file")
     arg_parse.add_argument("-P", "--debug_parse", action="store_true", default=False, help= "Debug parser")
-    arg_parse.add_argument("-R", "--debug_resolve", action="store_true", default=False, help= "Debug resolving")
     arg_parse.add_argument("-D", "--details", action="store_true", default=False, help= "All letters are queries")
     arg_parse.add_argument("-G", "--graph", action="store_true", default=False, help= "Display Graph")
     args = arg_parse.parse_args()
@@ -38,12 +36,6 @@ def main():
         for rule in rules:
             print("Whole rule : ")
             print(''.join(rule.statement) + " => " + ''.join(rule.deduction))
-            #print("     " + "detail, rule statement :")
-            # for c in rule.statement:
-            #     print("     " + c)
-            #print("     " + "rule deduction :")
-            # for c in rule.deduction:
-            #     print("     " + c)
         print("\n////////// ENTERING RESOLVER ////////////\n")
     resolver = Resolver.Resolver(args)
     err, facts, graph = resolver.resolve(rules, facts)
@@ -55,9 +47,6 @@ def main():
     if args.graph:
         Display.display_graph(graph, facts)
     return True
-
-
-
 
 if __name__ == '__main__':
     try:

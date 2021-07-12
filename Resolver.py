@@ -19,14 +19,11 @@ class Resolver:
         err = None
         self.modificationDone = True
         while (self.modificationDone):
-            #print("/////////// ONE LOOP")
-            self.modificationDone = False # Remember to set it back to true later when modification are indeed done!
+            self.modificationDone = False
             err = self.computes_all_rules(False)
-        #on gere les faux par default
         self.modificationDone = True
         while (self.modificationDone):
-            #print("/////////// ONE LOOP")
-            self.modificationDone = False # Remember to set it back to true later when modification are indeed done!
+            self.modificationDone = False
             err = self.computes_all_rules(True)
         if (self.args.graph == True):
             Graph.graph_data(self.graph, self.rules, self.facts)
@@ -34,20 +31,16 @@ class Resolver:
 
     def computes_all_rules(self, handling_default):
         for rule in self.rules:
-            #print("one rule = " , rule)
             if handling_default == False and self.check_default_in_rule(rule) == True:
                 continue
-            if self.analyze_statement(rule.statement, 0) == True:
+            if self.analyze_statement(rule.statement) == True:
                 rule.valid_statement = True
                 err = self.analyze_deduction(rule.deduction)
                 if err:
                     return err
 
-    def analyze_statement(self, statement, depth):
-        if (self.args.debug_resolve and depth == 0):
-            print("statement debug test, statement is :" + ''.join(statement))
+    def analyze_statement(self, statement):
         current_condition, i= self.find_initial_condition(statement)
-        #Loop and compute the initial condition with other elements, step by step
         left_op = ''
         negative = False
         while (i < len(statement)):
@@ -57,7 +50,7 @@ class Resolver:
                 while statement[i] != ')':
                     small_statement.append(statement[i])
                     i += 1
-                new_condition =  self.analyze_statement(small_statement, depth + 1)
+                new_condition =  self.analyze_statement(small_statement)
                 current_condition = self.combine_statements(left_op, current_condition, new_condition)
             elif statement[i] in self.operators:
                 left_op = statement[i]
@@ -72,9 +65,6 @@ class Resolver:
                     new_condition = not new_condition
                 current_condition = self.combine_statements(left_op, current_condition, new_condition)
             i += 1
-        
-        if self.args.debug_resolve and depth == 0:
-            print("final condition = " , current_condition)
         return current_condition
     
     def find_initial_condition(self, statement):
@@ -99,8 +89,6 @@ class Resolver:
         return current_condition, i
 
     def analyze_deduction(self, deduction):
-        if (self.args.debug_resolve):
-            print("Statement has been proven True. Analyzing deduction : " , deduction)
         idx = 0
         lenD = len(deduction)
         negating = False
@@ -114,7 +102,7 @@ class Resolver:
             elif (deduction[idx] == '!'):
                 negating = True
             else:
-                if deduction[idx] not in  "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+                if deduction[idx] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
                     print("problem in resolver, tmp to remove") # to remove
                 curr = deduction[idx]       
                 #temporary state for current, before sometime changing it again below    
@@ -173,7 +161,6 @@ class Resolver:
         return False
 
     def apply_state(self, letter, state):
-        print("entering : ", letter, " and state ", state)
         if (self.facts[letter].FactState != state):
             if (state == FactState.UNDETERMINED and self.facts[letter].FactState == FactState.TRUE) or (state == FactState.UNDETERMINED and self.facts[letter].FactState == FactState.FALSE):
                 return  # On applique pas undetermined sur un truc prouve vrai ou faux.
@@ -182,7 +169,6 @@ class Resolver:
                 sys.exit(1)
             self.facts[letter].FactState = state
             self.modificationDone = True
-            print("APPLYING STATE => ", state, " to ", letter)
 
     def combine_statements(self, operand, part1, part2):
         if operand == '+':

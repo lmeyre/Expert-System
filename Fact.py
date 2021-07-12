@@ -1,4 +1,3 @@
-#Si on trouve une contradiction on s'arrete je pense, car on ne peut pas continuer avec des incoherences
 from enum import Enum
 
 class FactState(Enum):

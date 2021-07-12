@@ -13,11 +13,11 @@ class Parser:
         queries = []
         for line in file_data:
             if self.args.show :
-                print(line) # check if empty line appear and we have to handle or not
+                print(line)
             isolate = line.split('#')
-            if not isolate[0]: # if empty line
+            if not isolate[0]:
                 continue
-            isolate[0] = isolate[0].strip()# remove blank at start and end
+            isolate[0] = isolate[0].strip()
             if not isolate[0]:
                 continue
             if isolate[0][0] == '=':
@@ -31,11 +31,11 @@ class Parser:
         return rules, queries, self.facts, None
 
     def add_fact(self, line):
-        i = 1#dodging '='
+        i = 1
         while (i < len(line)):
             if (line[i] not in self.valid_char):
                 return "Error, wrong symbol in facts"
-            self.facts[line[i]] = Fact.Fact(Fact.FactState.TRUE) # event if its already added, set it to true
+            self.facts[line[i]] = Fact.Fact(Fact.FactState.TRUE)
             i += 1
 
     def add_query(self, queries, line):
@@ -58,8 +58,7 @@ class Parser:
         else:    
             splitted = rule.split("=>")
             if not splitted[0] or not splitted[1]:
-                return "Missing one side of a rule" # could improve error later
-
+                return "Missing one side of a rule"
             new_rule = rule_obj.Rule()
             for c in splitted[0]:
                 if c  == ' ':
@@ -81,19 +80,12 @@ class Parser:
             rules.append(new_rule)
 
     def check_valid(self, rule):
-        if rule.count("=>") != 1:#handle both <=> and =>
+        if rule.count("=>") != 1:
             return ("Error in format of rule linking")
         spliter = "=>"
         if ("<=>" in rule):
             spliter = "<=>"
         rule_divided = rule.split(spliter)
-        
-        # rule_part = rule.split()
-        # for part in rule_part:# we can have 2 char without space if its !A or (A  or  A)
-        #     if len(part) != 1:
-        #         if part[0] != '!' and ("(" not in part or ")" not in part or ):
-        #             return ("Error in format of rule statement")
-
         err = self.check_valid_part(rule_divided[0])
         if err:
             return err
@@ -102,7 +94,6 @@ class Parser:
         err = self.check_valid_part(rule_divided[1])
         if err:
             return err
-
 
     def check_valid_part(self, rule_part):
         open_parenthesis = 0
