@@ -57,8 +57,6 @@ class Resolver:
             elif statement[i] == '!':
                 negative = True
             else:
-                if statement[i] not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":# TMP TO REMOVE ON FINISH
-                    print("Problem here, unhandled case ? -> " + statement[i])
                 new_condition = True if self.facts[statement[i]].FactState == FactState.TRUE else False
                 if negative:
                     negative = False
@@ -102,7 +100,6 @@ class Resolver:
                 negating = True
             else:
                 curr = deduction[idx]
-                #Giving Curr a temporary state before processing it more down below
                 if negating:
                     curr_state = FactState.FALSE
                     negating = False
@@ -117,7 +114,6 @@ class Resolver:
                     elif left_op == '^':
                         #If the XOR gate is already valid
                         if ((self.facts[left_letter].FactState == FactState.TRUE and self.facts[curr].FactState == FactState.FALSE) or (self.facts[left_letter].FactState == FactState.FALSE and self.facts[curr].FactState == FactState.TRUE)):
-                            print("good xor gate already in place on : " + curr)
                             curr_state = self.facts[curr].FactState
                         #If both are default/undetermined
                         elif (self.facts[left_letter].FactState == FactState.DEFAULT or self.facts[left_letter].FactState == FactState.UNDETERMINED) and (self.facts[curr].FactState == FactState.DEFAULT or self.facts[curr].FactState == FactState.UNDETERMINED):    
@@ -134,12 +130,6 @@ class Resolver:
                             state = FactState.TRUE if (self.facts[left_letter].FactState == FactState.FALSE) else FactState.FALSE
                             self.apply_state(left_letter, left_letter_state)
                             curr_state = state
-                        else:
-                            print(" CRITICAAAAAAAAAAAAAAAAAAAL ", deduction[idx], " and left op - ", left_op)
-                            print(self.facts[left_letter].FactState)
-                            print(self.facts[curr].FactState)
-                    else:
-                        print("CRITICAAAAAAAAAAAAAAAAAAAL")
                 left_letter = curr
                 left_letter_state = curr_state
             idx += 1
@@ -154,7 +144,7 @@ class Resolver:
     def apply_state(self, letter, state):
         if (self.facts[letter].FactState != state):
             if (state == FactState.UNDETERMINED and self.facts[letter].FactState == FactState.TRUE) or (state == FactState.UNDETERMINED and self.facts[letter].FactState == FactState.FALSE):
-                return  # On applique pas undetermined sur un truc prouve vrai ou faux.
+                return
             elif (self.facts[letter].FactState == FactState.TRUE and state == FactState.FALSE) or (self.facts[letter].FactState == FactState.FALSE and state == FactState.TRUE):
                 print("Contradiction in rules -> " + letter + " has been proven True AND False")
                 sys.exit(1)

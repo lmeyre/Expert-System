@@ -19,11 +19,12 @@ def add_nodes_edges(rule_part, facts, graph):
     last_neg = None
     for symbol in rule_part:
         if symbol in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-            tmp = symbol# Here we DONT use a ref class (Node), because we want only one 'A', where for "!" we want multiple of them
+            # Here we DONT use a ref class (Node), because we want only one 'A', where for "!" we want multiple of them
+            tmp = symbol
             graph.add_node(tmp, FactState=facts[symbol].FactState)
             if (neg is not None):    
                 st = FactState.TRUE
-                if (facts[symbol] == FactState.TRUE):#Negating is valided by DEFAULT/UNDETERMINED/FALSE
+                if (facts[symbol] == FactState.TRUE):
                     st = FactState.FALSE
                 graph.add_node(neg, FactState=st)
                 graph.add_edge(tmp, neg)

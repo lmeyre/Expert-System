@@ -27,8 +27,6 @@ def display_graph(graph):
                     colors.append("yellow")
                 elif graph.nodes[x]["FactState"] == FactState.LINKER:
                     colors.append("purple")
-                else:
-                    print("CRITICAAAAAAAAAAAAAAAAAAAL")
         df = pd.DataFrame(index=graph.nodes(), columns=graph.nodes())
         for row, data in nx.shortest_path_length(graph):
             for col, dist in data.items():
