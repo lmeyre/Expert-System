@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
+
 import argparse as arg
 import sys
 import Parser
 import Resolver
 import Display
+
 
 def main():
     arg_parse = arg.ArgumentParser()
