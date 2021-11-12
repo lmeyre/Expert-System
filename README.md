@@ -1,5 +1,7 @@
 # Expert-System
 
+This project is an expert system for propositional calculus : https://en.wikipedia.org/wiki/Expert_system
+
 The projets got 4 options :
 
 -S  ->   Will show the input file
